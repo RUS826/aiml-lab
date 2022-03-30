@@ -1,40 +1,27 @@
-from sklearn import datasets
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-
-from sklearn.cluster import KMeans
-
-iris = datasets.load_iris()
-
-x = pd.DataFrame(iris.data)
-x.columns = ['Sepal_Length','Sepal_Width','Petal_Length','Petal_Width']
-
-y = pd.DataFrame(iris.target)
-y.columns = ['Targets']
-
-plt.figure(figsize=(14,7))
-colormap = np.array(['red','lime','black'])
-plt.subplot(1,2,1)
-plt.scatter(x.Sepal_Length, x.Sepal_Width, c = colormap[y.Targets], s=40)
-plt.title('Sepal')
-plt.subplot(1,2,2)
-plt.scatter(x.Petal_Length, x.Petal_Width, c = colormap[y.Targets], s=40)
-plt.title('Petal')
-
-model = KMeans(n_clusters = 3)
-model.fit(x)
-
-plt.figure(figsize=(14,7))
-colormap = np.array(['red','lime','black'])
-plt.subplot(1,2,1)
-plt.scatter(x.Petal_Length, x.Petal_Width, c = colormap[y.Targets], s=40)
-plt.title('Real')
-plt.subplot(1,2,2)
-plt.scatter(x.Petal_Length, x.Petal_Width, c = colormap[model.labels_], s=40)
-plt.title('kmeans')
-
-print("accuracy_score", accuracy_score(y.Targets, model.labels_))
-print("confusion_matrix\n", confusion_matrix(y.Targets,model.labels_))
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.datasets import load_iris
+iris_dataset=load_iris()
+print("\n IRIS FEATURES \ TARGET NAMES: \n ", iris_dataset.target_names)
+for i in range(len(iris_dataset.target_names)):
+      print("\n[{0}]:[{1}]".format(i,iris_dataset.target_names[i]))
+X_train, X_test, y_train, y_test = train_test_split(iris_dataset["data"], iris_dataset["target"], 
+random_state=0)
+kn = KNeighborsClassifier(n_neighbors=33)
+kn.fit(X_train, y_train)
+x_new = np.array([[5, 2.9, 1, 0.2]])
+print("\n XNEW \n",x_new)
+prediction = kn.predict(x_new)
+print("\n Predicted target value: {0}\n".format(prediction))
+print("\n Predicted feature name {0}\n".format(iris_dataset.target_names[prediction]))
+i=1
+x = X_test[i]
+x_new = np.array([x])
+for i in range(len(X_test)):
+     x = X_test[i]
+     x_new = np.array([x])
+     prediction = kn.predict(x_new)
+     print("\n Actual: {0} {1}, Predicted: {2} {3}".format(y_test[i], iris_dataset.target_names[y_test[i]], 
+prediction, iris_dataset.target_names[prediction]))
+print("\n TEST SCORE[ACCURACY]: {:.2f}\n".format(kn.score(X_test, y_test)))
